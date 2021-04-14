@@ -141,7 +141,110 @@ public class GetPayoutsExample {
 				HttpException he = (HttpException) ioe;
 				System.out.println(he.getMessage());
 				he.headers().forEach(x -> System.out.println(x + " :" + he.headers().header(x)));
-			} else {
+			
+    public class MainActivity extends AppCompatActivity {
+TextView whichCard;
+ImageButton payNow,cancel;
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    setContentView(R.layout.activity_main);
+
+    Toast.makeText(this, ""+ Constants.whichCard, Toast.LENGTH_SHORT).show();
+    try {
+        if (!Constants.whichCard.equals("")) {
+            whichCard.setText(Constants.whichCard);
+        }
+        else {
+            Toast.makeText(this, "Nullll", Toast.LENGTH_SHORT).show();
+        }
+    }catch (Exception e){}
+
+    payNow= findViewById(R.id.payNow);
+    cancel= findViewById(R.id.cancelPay);
+
+
+    cancel.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+
+        }
+    });
+    payNow.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            Intent newPayIntent = new Intent(MainActivity.this, PayActivity.class);
+
+            newPayIntent.putExtra("merchantId", "459");
+            newPayIntent.putExtra("txnscamt", "0"); //Fixed. Must be �0�
+            newPayIntent.putExtra("loginid", "459");
+            newPayIntent.putExtra("password", "Test@123");
+            newPayIntent.putExtra("prodid", "NSE");
+            newPayIntent.putExtra("txncurr", "INR"); //Fixed. Must be �INR�
+            newPayIntent.putExtra("clientcode", "001");
+            newPayIntent.putExtra("custacc", "100000036900");
+            newPayIntent.putExtra("amt", "50.000");//Should be 3 decimal number i.e 1.000
+            newPayIntent.putExtra("txnid", "01");
+            newPayIntent.putExtra("date", "25/08/2015 18:31:00");//Should be in same format
+            newPayIntent.putExtra("bankid", "2019"); //Should be valid bank id
+
+            //use below Production url only with Production "Library-MobilePaymentSDK", Located inside PROD folder
+            //newPayIntent.putExtra("ru","https://payment.atomtech.in/mobilesdk/param"); //ru FOR Production
+
+            //use below UAT url only with UAT "Library-MobilePaymentSDK", Located inside UAT folder
+            newPayIntent.putExtra("ru", "https://paynetzuat.atomtech.in/mobilesdk/param"); // FOR UAT (Testing)
+
+            //Optinal Parameters
+            newPayIntent.putExtra("customerName", "Sweta sap"); //Only for Name
+            newPayIntent.putExtra("customerEmailID", "sap.sweta@atomtech.in");//Only for Email ID
+            newPayIntent.putExtra("customerMobileNo", "9876043210");//Only for Mobile Number
+            newPayIntent.putExtra("billingAddress", "Mumbai");//Only for Address
+            newPayIntent.putExtra("optionalUdf9", "OPTIONAL DATA 1");// Can pass any data
+
+            startActivityForResult(newPayIntent, 1);
+        }
+    });
+
+}
+
+@Override
+protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    super.onActivityResult(requestCode, resultCode, data);
+
+    if (requestCode == 1)
+    {
+        if (data != null)
+        {
+            String message = data.getStringExtra("status");
+            String[] resKey = data.getStringArrayExtra("responseKeyArray");
+            String[] resValue = data.getStringArrayExtra("responseValueArray");
+
+            if(resKey!=null && resValue!=null)
+            {
+                for(int i=0; i<resKey.length; i++)
+                    System.out.println("  "+i+" resKey : "+resKey[i]+" resValue : "+resValue[i]);
+            }
+            Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+
+        }
+    }
+
+}
+}
+
+Kindly guide me how to solve this issue.
+
+Share Improve this question Follow
+asked
+Nov 5 '19 at 12:31
+
+00Curly
+1●22 bronze badges edited
+Nov 5 '19 at 12:49
+
+Check the dependancy you are using, there is issue in com.atom.mobilepaymentsdk.PayActivity means in the library I guess. Check if you are using latest version or not. – Prashant Sable Nov 5 '19 at 13:00
+no,its not latest version , actual i'm using android-Version 28 and the library has android-Version 24. – 00Curly Nov 5 '19 at 13:09 
+} else {
 				// Something went wrong client-side
 			}
 		}
